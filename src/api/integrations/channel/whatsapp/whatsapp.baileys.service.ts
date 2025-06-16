@@ -1904,19 +1904,26 @@ export class BaileysStartupService extends ChannelStartupService {
   }
 
   public async offerCall({ number, isVideo, callDuration }: OfferCallDto) {
-    const jid = createJid(number);
+  const jid = createJid(number);
+  return this.makeCall(jid, isVideo, callDuration);
+}
 
-   try {
-  if (typeof this.client.offerCall === 'function' && typeof this.client.terminateCall === 'function') {
-    const call = await this.client.offerCall(jid, isVideo);
-    setTimeout(() => this.client.terminateCall(call.id, call.to), callDuration * 1000);
-    return call;
-  } else {
-    console.warn('Funções offerCall ou terminateCall não estão disponíveis no client.');
-    return null; // Ou retorne o que fizer sentido no seu caso
+private async makeCall(jid: string, isVideo: boolean, callDuration: number) {
+  try {
+    if (
+      typeof this.client.offerCall === 'function' &&
+      typeof this.client.terminateCall === 'function'
+    ) {
+      const call = await this.client.offerCall(jid, isVideo);
+      setTimeout(() => this.client.terminateCall(call.id, call.to), callDuration * 1000);
+      return call;
+    } else {
+      console.warn('Funções offerCall ou terminateCall não estão disponíveis no client.');
+      return null;
+    }
+  } catch (error) {
+    return error;
   }
-} catch (error) {
-  return error;
 }
 
   private async sendMessage(
