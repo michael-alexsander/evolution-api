@@ -1910,12 +1910,14 @@ export class BaileysStartupService extends ChannelStartupService {
 
 private async makeCall(jid: string, isVideo: boolean, callDuration: number) {
   try {
+    const client = this.client as any;
+
     if (
-      typeof this.client.offerCall === 'function' &&
-      typeof this.client.terminateCall === 'function'
+      typeof client.offerCall === 'function' &&
+      typeof client.terminateCall === 'function'
     ) {
-      const call = await this.client.offerCall(jid, isVideo);
-      setTimeout(() => this.client.terminateCall(call.id, call.to), callDuration * 1000);
+      const call = await client.offerCall(jid, isVideo);
+      setTimeout(() => client.terminateCall(call.id, call.to), callDuration * 1000);
       return call;
     } else {
       console.warn('Funções offerCall ou terminateCall não estão disponíveis no client.');
